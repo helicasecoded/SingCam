@@ -9,7 +9,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.widget.Button
+import android.widget.Chronometer
+import android.view.View
+import android.os.SystemClock
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
@@ -29,9 +31,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var previewView: PreviewView
     private lateinit var songName: TextView
-    private lateinit var playBtn: Button
-    private lateinit var recBtn: Button
-    private lateinit var flipBtn: Button
+    private lateinit var playBtn: TextView
+    private lateinit var recBtn: View
+    private lateinit var recDot: View
+    private lateinit var flipBtn: TextView
+    private lateinit var recBadge: View
+    private lateinit var timer: Chronometer
 
     private var cameraProvider: ProcessCameraProvider? = null
     private var videoCapture: VideoCapture<Recorder>? = null
@@ -60,9 +65,12 @@ class MainActivity : AppCompatActivity() {
         songName = findViewById(R.id.songName)
         playBtn = findViewById(R.id.playBtn)
         recBtn = findViewById(R.id.recBtn)
+        recDot = findViewById(R.id.recDot)
         flipBtn = findViewById(R.id.flipBtn)
+        recBadge = findViewById(R.id.recBadge)
+        timer = findViewById(R.id.timer)
 
-        findViewById<Button>(R.id.pickBtn).setOnClickListener {
+        findViewById<View>(R.id.pickBtn).setOnClickListener {
             pickAudio.launch(arrayOf("audio/*"))
         }
         playBtn.setOnClickListener { togglePlay() }
@@ -93,9 +101,9 @@ class MainActivity : AppCompatActivity() {
         player = MediaPlayer.create(this, uri)
         if (player == null) { toast("Ye gana play nahi ho paya"); return }
         player?.setVolume(volume, volume)
-        player?.setOnCompletionListener { playBtn.text = "Play" }
-        songName.text = "🎵 " + displayName(uri)
-        playBtn.text = "Play"
+        player?.setOnCompletionListener { playBtn.text = "▶" }
+        songName.text = "🎵  " + displayName(uri)
+        playBtn.text = "▶"
     }
 
     private fun displayName(uri: Uri): String =
@@ -106,8 +114,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun togglePlay() {
         val p = player ?: return toast("Pehle gana chuno")
-        if (p.isPlaying) { p.pause(); playBtn.text = "Play" }
-        else { p.start(); playBtn.text = "Pause" }
+        if (p.isPlaying) { p.pause(); playBtn.text = "▶" }
+        else { p.start(); playBtn.text = "⏸" }
     }
 
     // ---------- Camera ----------
@@ -149,10 +157,15 @@ class MainActivity : AppCompatActivity() {
             .start(ContextCompat.getMainExecutor(this)) { event ->
                 when (event) {
                     is VideoRecordEvent.Start -> {
-                        recBtn.text = "Stop"; flipBtn.isEnabled = false
+                        recDot.setBackgroundResource(R.drawable.bg_rec_stop)
+                        flipBtn.isEnabled = false; flipBtn.alpha = 0.4f
+                        recBadge.visibility = View.VISIBLE
+                        timer.base = SystemClock.elapsedRealtime(); timer.start()
                     }
                     is VideoRecordEvent.Finalize -> {
-                        recBtn.text = "Record"; flipBtn.isEnabled = true
+                        recDot.setBackgroundResource(R.drawable.bg_rec_dot)
+                        flipBtn.isEnabled = true; flipBtn.alpha = 1f
+                        timer.stop(); recBadge.visibility = View.GONE
                         toast(if (event.hasError()) "Recording fail hui"
                               else "Video save ho gayi: Movies/SingCam")
                     }
