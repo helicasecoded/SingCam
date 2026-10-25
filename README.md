@@ -57,6 +57,7 @@ Most people don't have a second device handy, and the built-in camera app isn't 
 - ⏱️ **Live REC timer.** You always know how long you've been recording.
 - 💾 **Saved to your gallery.** Videos are stored in `Movies/SingCam` as standard MP4 files.
 - 🌙 **Clean, modern UI.** Large record button, simple controls, nothing in the way.
+- live filters.** Lo-Res, Handheld, Rio de Janeiro, Soft Light, Zoom Blur, Hyper, Gritty, Grainy, Midnight, Black & White and Fade, applied to both the preview and the recorded video.
 
 ---
 
