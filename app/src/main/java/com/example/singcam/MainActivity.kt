@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     private val askPermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { r ->
             if (r.values.all { it }) startCamera()
-            else toast("Camera aur Mic ki permission chahiye")
+            else toast("Camera and microphone permissions are required")
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
     private fun loadSong(uri: Uri) {
         player?.release()
         player = MediaPlayer.create(this, uri)
-        if (player == null) { toast("Ye gana play nahi ho paya"); return }
+        if (player == null) { toast("This song could not be played"); return }
         player?.setVolume(volume, volume)
         player?.setOnCompletionListener { playBtn.text = "▶" }
         songName.text = "🎵  " + displayName(uri)
@@ -110,10 +110,10 @@ class MainActivity : AppCompatActivity() {
         contentResolver.query(uri, null, null, null, null)?.use { c ->
             val i = c.getColumnIndex(OpenableColumns.DISPLAY_NAME)
             if (c.moveToFirst() && i >= 0) c.getString(i) else null
-        } ?: "Gana"
+        } ?: "Song"
 
     private fun togglePlay() {
-        val p = player ?: return toast("Pehle gana chuno")
+        val p = player ?: return toast("Choose a song first")
         if (p.isPlaying) { p.pause(); playBtn.text = "▶" }
         else { p.start(); playBtn.text = "⏸" }
     }
@@ -153,7 +153,7 @@ class MainActivity : AppCompatActivity() {
         ).setContentValues(values).build()
 
         recording = vc.output.prepareRecording(this, options)
-            .withAudioEnabled() // mic ON — gana chalta rahega
+            .withAudioEnabled() // mic ON: captures your voice and the music from the speaker
             .start(ContextCompat.getMainExecutor(this)) { event ->
                 when (event) {
                     is VideoRecordEvent.Start -> {
@@ -166,8 +166,8 @@ class MainActivity : AppCompatActivity() {
                         recDot.setBackgroundResource(R.drawable.bg_rec_dot)
                         flipBtn.isEnabled = true; flipBtn.alpha = 1f
                         timer.stop(); recBadge.visibility = View.GONE
-                        toast(if (event.hasError()) "Recording fail hui"
-                              else "Video save ho gayi: Movies/SingCam")
+                        toast(if (event.hasError()) "Recording failed"
+                              else "Video saved to Movies/SingCam")
                     }
                     else -> {}
                 }
