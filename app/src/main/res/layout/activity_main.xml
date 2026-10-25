@@ -82,6 +82,20 @@
         android:paddingRight="24dp"
         android:paddingBottom="28dp">
 
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="14dp"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/filterRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -187,7 +201,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:gravity="center"
-            android:text="Play your song in Spotify, keep the speaker low, then tap record 🎤"
+            android:text="Pick a filter, play your song, keep the speaker low, then tap record 🎤"
             android:textColor="#99FFFFFF"
             android:textSize="12sp" />
     </LinearLayout>
